@@ -1,43 +1,64 @@
-import { Router, Request, Response } from 'express';
-import { commentsTable } from '../lib/airtable';
-import { Comment } from '../types';
+import express from 'express';
+import { airtableService } from '../lib/airtable.service';
+import { authenticateToken } from './auth';
+import { isAuthorOrAdmin } from '../middleware/isAuthorOrAdmin';
 
-const router = Router();
+const router = express.Router();
 
-// POST : Créer un commentaire pour un projet
-router.post('/', async (req: Request, res: Response) => {
-  const { Project, Comment: commentText, Auteur } = req.body;
+// Interface pour les commentaires
+interface Comment {
+  commentID: string;
+  projectID: string;
+  content: string;
+  author: string;
+  createdAt: string;
+}
+
+// Récupérer tous les commentaires d'un projet
+router.get('/project/:projectID', async (req, res) => {
   try {
-    const createdRecord = await commentsTable.create({
-      'Project': [Project], // Champ lié à la table Projects
-      'Comment': commentText,
-      'Auteur': Auteur
-    });
-    res.status(201).json({ id: createdRecord.id });
+    const comments = await airtableService.getComments(req.params.projectID);
+    res.json(comments);
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la création du commentaire' });
+    res.status(500).json({ error: 'Error fetching comments' });
   }
 });
 
-// GET : Récupérer les commentaires d'un projet (via query projectId)
-router.get('/', async (req: Request, res: Response) => {
-  const { projectId } = req.query;
+// Routes protégées nécessitant l'authentification
+router.use(authenticateToken);
+
+// Routes nécessitant d'être l'auteur ou admin
+router.put('/:id', isAuthorOrAdmin, async (req, res) => {
   try {
-    const records = await commentsTable.select({
-      filterByFormula: \`SEARCH("\${projectId}", {Project})\`
-    }).all();
-
-    const comments: Comment[] = records.map(record => ({
-      id: record.id,
-      Project: (record.get('Project') as string[])[0],
-      Comment: record.get('Comment') as string,
-      Auteur: record.get('Auteur') as string,
-      CreatedAt: record.get('Created time') as string
-    }));
-
-    res.json({ comments });
+    const { id } = req.params;
+    const commentData = req.body;
+    const updatedComment = await airtableService.updateComment(id, commentData);
+    res.json(updatedComment);
   } catch (error) {
-    res.status(500).json({ error: 'Erreur lors de la récupération des commentaires' });
+    console.error('Erreur lors de la mise à jour du commentaire:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+router.delete('/:id', isAuthorOrAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await airtableService.deleteComment(id);
+    res.json({ message: 'Commentaire supprimé avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression du commentaire:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Ajouter un commentaire
+router.post('/', async (req, res) => {
+  try {
+    const { projectId, content, author } = req.body;
+    const comment = await airtableService.addComment(projectId, content, author);
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(500).json({ error: 'Error adding comment' });
   }
 });
 

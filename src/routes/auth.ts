@@ -82,20 +82,36 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
 
   try {
+    console.log('Tentative de connexion pour:', username);
     const user = await airtableService.getUserByUsername(username);
+    console.log('Utilisateur trouvé:', user ? 'Oui' : 'Non');
+
     if (!user) {
+      console.log('Utilisateur non trouvé');
       res.status(401).json({ error: 'Identifiants invalides' });
       return;
     }
 
+    console.log('Vérification du mot de passe...');
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Mot de passe valide:', isPasswordValid);
+
     if (!isPasswordValid) {
+      console.log('Mot de passe invalide');
       res.status(401).json({ error: 'Identifiants invalides' });
       return;
     }
 
+    console.log('Génération du token...');
     const token = jwt.sign({ userID: user.userID }, process.env.JWT_SECRET || '', { expiresIn: '24h' });
-    res.json({ token, username: user.username, role: user.role });
+    console.log('Token généré avec succès');
+
+    res.json({ 
+      token, 
+      username: user.username, 
+      role: user.role,
+      id: user.userID 
+    });
   } catch (error) {
     console.error('Erreur lors de la connexion:', error);
     res.status(500).json({ error: 'Erreur lors de la connexion' });

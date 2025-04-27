@@ -14,16 +14,16 @@ export interface Project {
   projectID: string;
   name: string;
   description: string;
-  technologies: string[];
+  technologies: string;
   projectLink?: string;
   githubLink?: string;
   demoLink?: string;
-  images: string[];
+  images: string;
   thumbnail?: string;
   promotion: string;
-  students: string[];
+  students: string;
   category: string;
-  tags: string[];
+  tags: string;
   status: 'En cours' | 'Terminé' | 'En pause';
   difficulty: 'Débutant' | 'Intermédiaire' | 'Avancé';
   startDate: string;
@@ -72,16 +72,16 @@ export const airtableService = {
             projectID: record.id,
             name: record.get('name') as string || '',
             description: record.get('description') as string || '',
-            technologies: record.get('technologies') as string[] || [],
+            technologies: record.get('technologies') as string || '',
             projectLink: record.get('projectLink') as string || '',
             githubLink: record.get('githubLink') as string || '',
             demoLink: record.get('demoLink') as string || '',
-            images: record.get('images') as string[] || [],
+            images: record.get('images') as string || '',
             thumbnail: record.get('thumbnail') as string || '',
             promotion: record.get('promotion') as string || '',
-            students: record.get('students') as string[] || [],
+            students: record.get('students') as string || '',
             category: record.get('category') as string || '',
-            tags: record.get('tags') as string[] || [],
+            tags: record.get('tags') as string || '',
             status: (record.get('status') as 'En cours' | 'Terminé' | 'En pause') || 'En cours',
             difficulty: (record.get('difficulty') as 'Débutant' | 'Intermédiaire' | 'Avancé') || 'Intermédiaire',
             startDate: record.get('startDate') as string || new Date().toISOString(),
@@ -114,16 +114,16 @@ export const airtableService = {
         projectID: record.id,
         name: record.get('name') as string,
         description: record.get('description') as string,
-        technologies: record.get('technologies') as string[] || [],
+        technologies: record.get('technologies') as string || '',
         projectLink: record.get('projectLink') as string,
         githubLink: record.get('githubLink') as string,
         demoLink: record.get('demoLink') as string,
-        images: record.get('images') as string[] || [],
+        images: record.get('images') as string || '',
         thumbnail: record.get('thumbnail') as string,
         promotion: record.get('promotion') as string,
-        students: record.get('students') as string[] || [],
+        students: record.get('students') as string || '',
         category: record.get('category') as string,
-        tags: record.get('tags') as string[] || [],
+        tags: record.get('tags') as string || '',
         status: (record.get('status') as 'En cours' | 'Terminé' | 'En pause') || 'En cours',
         difficulty: (record.get('difficulty') as 'Débutant' | 'Intermédiaire' | 'Avancé') || 'Intermédiaire',
         startDate: record.get('startDate') as string || new Date().toISOString(),
@@ -206,16 +206,16 @@ export const airtableService = {
         projectID: record.id,
         name: record.get('name') as string,
         description: record.get('description') as string,
-        technologies: record.get('technologies') as string[] || [],
+        technologies: record.get('technologies') as string || '',
         projectLink: record.get('projectLink') as string,
         githubLink: record.get('githubLink') as string,
         demoLink: record.get('demoLink') as string,
-        images: record.get('images') as string[] || [],
+        images: record.get('images') as string || '',
         thumbnail: record.get('thumbnail') as string,
         promotion: record.get('promotion') as string,
-        students: record.get('students') as string[] || [],
+        students: record.get('students') as string || '',
         category: record.get('category') as string,
-        tags: record.get('tags') as string[] || [],
+        tags: record.get('tags') as string || '',
         status: (record.get('status') as 'En cours' | 'Terminé' | 'En pause') || 'En cours',
         difficulty: (record.get('difficulty') as 'Débutant' | 'Intermédiaire' | 'Avancé') || 'Intermédiaire',
         startDate: record.get('startDate') as string || new Date().toISOString(),
@@ -266,16 +266,16 @@ export const airtableService = {
         projectID: record.id,
         name: record.get('name') as string,
         description: record.get('description') as string,
-        technologies: record.get('technologies') as string[] || [],
+        technologies: record.get('technologies') as string || '',
         projectLink: record.get('projectLink') as string,
         githubLink: record.get('githubLink') as string,
         demoLink: record.get('demoLink') as string,
-        images: record.get('images') as string[] || [],
+        images: record.get('images') as string || '',
         thumbnail: record.get('thumbnail') as string,
         promotion: record.get('promotion') as string,
-        students: record.get('students') as string[] || [],
+        students: record.get('students') as string || '',
         category: record.get('category') as string,
-        tags: record.get('tags') as string[] || [],
+        tags: record.get('tags') as string || '',
         status: (record.get('status') as 'En cours' | 'Terminé' | 'En pause') || 'En cours',
         difficulty: (record.get('difficulty') as 'Débutant' | 'Intermédiaire' | 'Avancé') || 'Intermédiaire',
         startDate: record.get('startDate') as string || new Date().toISOString(),

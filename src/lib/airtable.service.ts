@@ -142,36 +142,51 @@ export const airtableService = {
   // Créer un nouveau projet
   async createProject(project: Omit<Project, 'projectID'>): Promise<Project> {
     try {
-      const record = await base('Projects').create({
+      console.log('Tentative de création du projet avec les données:', project);
+
+      // Validation des champs requis
+      if (!project.name || !project.description || !project.category || !project.promotion) {
+        throw new Error('Les champs name, description, category et promotion sont requis');
+      }
+
+      // Formatage des données pour Airtable
+      const projectData = {
         name: project.name,
         description: project.description,
-        technologies: project.technologies,
-        projectLink: project.projectLink,
-        githubLink: project.githubLink,
-        demoLink: project.demoLink,
-        images: project.images,
-        thumbnail: project.thumbnail,
+        technologies: project.technologies || '',
+        projectLink: project.projectLink || '',
+        githubLink: project.githubLink || '',
+        demoLink: project.demoLink || '',
+        images: project.images || '',
+        thumbnail: project.thumbnail || '',
         promotion: project.promotion,
-        students: project.students,
+        students: project.students || '',
         category: project.category,
-        tags: project.tags,
-        status: project.status,
-        difficulty: project.difficulty,
-        startDate: project.startDate,
-        endDate: project.endDate,
-        mentor: project.mentor,
-        achievements: project.achievements,
-        isHidden: project.isHidden,
-        likes: 0
-      });
-
-      return {
-        projectID: record.id,
-        ...project,
+        tags: project.tags || '',
+        status: project.status || 'En cours',
+        difficulty: project.difficulty || 'Intermédiaire',
+        startDate: project.startDate || new Date().toISOString(),
+        endDate: project.endDate || '',
+        mentor: project.mentor || '',
+        achievements: project.achievements || '',
+        isHidden: project.isHidden || false,
         likes: 0
       };
+
+      console.log('Données formatées pour Airtable:', projectData);
+
+      const record = await base('Projects').create(projectData);
+      console.log('Projet créé avec succès:', record.id);
+
+      const createdProject = {
+        projectID: record.id,
+        ...projectData
+      };
+
+      console.log('Projet retourné:', createdProject);
+      return createdProject;
     } catch (error) {
-      console.error('Error creating project:', error);
+      console.error('Erreur détaillée lors de la création du projet:', error);
       throw error;
     }
   },

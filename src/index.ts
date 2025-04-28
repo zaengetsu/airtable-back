@@ -20,7 +20,25 @@ app.use('/api/projects', projectsRouter);
 app.use('/api/comments', commentsRouter);
 app.use('/api/auth', authRouter);
 
+// Gestionnaire d'erreurs global
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('Erreur globale:', err);
+  res.status(500).json({ 
+    error: 'Erreur serveur',
+    message: err.message || 'Une erreur est survenue'
+  });
+});
+
+// Route 404
+app.use((req: express.Request, res: express.Response) => {
+  res.status(404).json({ error: 'Route non trouvée' });
+});
+
 // Démarrage du serveur
 app.listen(PORT, () => {
   console.log(`Backend server is running on port ${PORT}`);
+  console.log('Configuration Airtable:', {
+    apiKey: process.env.AIRTABLE_API_KEY ? 'Présente' : 'Manquante',
+    baseId: process.env.AIRTABLE_BASE_ID ? 'Présent' : 'Manquant'
+  });
 });

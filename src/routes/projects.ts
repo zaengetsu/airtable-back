@@ -58,10 +58,41 @@ router.get('/:id', async (req, res) => {
 // Routes nécessitant d'être connecté
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const project = await airtableService.createProject(req.body);
+    console.log('Tentative de création de projet avec les données:', req.body);
+
+    // Validation des champs requis
+    const requiredFields = ['name', 'description', 'category', 'promotion'];
+    const missingFields = requiredFields.filter(field => !req.body[field]);
+    
+    if (missingFields.length > 0) {
+      console.error('Champs manquants:', missingFields);
+      return res.status(400).json({
+        error: `Les champs suivants sont requis: ${missingFields.join(', ')}`
+      });
+    }
+
+    // Formatage des données
+    const projectData = {
+      ...req.body,
+      technologies: req.body.technologies || '',
+      students: req.body.students || '',
+      tags: req.body.tags || '',
+      startDate: req.body.startDate || new Date().toISOString(),
+      isHidden: req.body.isHidden || false,
+      likes: 0
+    };
+
+    console.log('Données formatées:', projectData);
+
+    const project = await airtableService.createProject(projectData);
+    console.log('Projet créé avec succès:', project);
+    
     res.status(201).json(project);
   } catch (error) {
-    res.status(500).json({ error: 'Erreur serveur' });
+    console.error('Erreur détaillée lors de la création du projet:', error);
+    res.status(500).json({ 
+      error: error instanceof Error ? error.message : 'Erreur serveur'
+    });
   }
 });
 
